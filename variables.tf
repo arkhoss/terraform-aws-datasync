@@ -9,6 +9,15 @@
 ########################## END #########################
 
 #----------------------------------------------------------------
+#  Specify if it is the Source Account or the Destination Account 
+#----------------------------------------------------------------
+variable "is_src_account" {
+  description = "Work over Source Accout"
+  type        = bool
+  default     = true
+}
+
+#----------------------------------------------------------------
 #  IAM role for DataSync in source account
 #----------------------------------------------------------------
 variable "src_create_iam_role" {
@@ -35,13 +44,13 @@ variable "src_force_detach_policies" {
   default     = false
 }
 
-variable "src_role_arn" {
+variable "src_iam_role_arn" {
   description = <<-EOD
   (Required) The Amazon Resource Name (ARN) of the role that the Amazon DataSync can assume
   Mandatory if `src_create_iam_role=false`
   EOD
   type        = string
-  default     = null
+  default     = "arn:aws:iam::123456789012:role/source-datasync-role"
 }
 
 #----------------------------------------------------------------
@@ -67,16 +76,26 @@ variable "src_s3_bucket_arn" {
   default     = null
 }
 
+variable "src_s3_attached_policy" {
+  description = "Amazon S3 attached policy"
+  type        = string
+  default     = null
+}
+
 #----------------------------------------------------------------
 #  Amazon DataSync destination location in your source account.
 #----------------------------------------------------------------
 
-
+variable "create_datasync_locations" {
+  description = "Enable the creation of datasync locations"
+  type        = bool
+  default     = false
+}
 
 #----------------------------------------------------------------
 #  Amazon S3 in destination account
 #----------------------------------------------------------------
-variable "dts_create_s3_bucket" {
+variable "dst_create_s3_bucket" {
   description = "Create new S3 bucket for Destination. "
   type        = string
   default     = true
@@ -99,12 +118,30 @@ variable "dst_s3_bucket_arn" {
   default     = null
 }
 
-variable "dst_s3_attached_policy" {
+variable "dst_s3_attach_custom_policy" {
+  description = "Enable policy attach to the Destination S3 bucket"
+  type        = bool
+  default     = true
+}
+
+variable "dst_s3_custom_policy" {
   description = "Policy attached to the Destination S3 bucket"
   type        = string
   default     = null
 }
 
+variable "dst_s3_bucket_path" {
+  description = "Path in the Destination S3 bucket"
+  type        = string
+  default     = null
+}
+
+
 ### ACL disabled, S3_Attached_policy to the dst_s3_bucket. 
 
 
+variable "tags" {
+  description = "(Optional) A map of resource tags to associate with the resource"
+  type        = map(string)
+  default     = {}
+}
