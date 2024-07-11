@@ -18,10 +18,52 @@ data "aws_iam_policy_document" "datasync_assume" {
         type        = "Service"
         identifiers = ["s3.amazonaws.com"]
     }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = ["${var.src_account_id}"]
+    }
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = [
+        "arn:aws:datasync:${var.src_aws_region}:${var.src_account_id}:*",
+        "arn:aws:s3:::*"      
+      ]
+    }
   }
+
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+        type        = "Service"
+        identifiers = ["datasync.amazonaws.com"]
+    }
+
+    principals {
+        type        = "Service"
+        identifiers = ["s3.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = ["${var.src_account_id}"]
+    }
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:aws:datasync:${var.dst_aws_region}:${var.src_account_id}:*"]
+    }
+  }
+
 }
 
-data "aws_iam_policy_document" "datasync" {
+data "aws_iam_policy_document" "src_datasync" {
 
   statement {
     effect = "Allow"
@@ -29,11 +71,11 @@ data "aws_iam_policy_document" "datasync" {
         "s3:GetBucketLocation",
         "s3:ListBucket",
         "s3:ListBucketMultipartUploads"
-    ]
+      ]
     resources = [
         "arn:aws:s3:::${var.src_s3_bucket_name}",
         "arn:aws:s3:::${var.dst_s3_bucket_name}"
-        ]
+      ]
     }
 
   statement {
@@ -46,11 +88,21 @@ data "aws_iam_policy_document" "datasync" {
         "s3:PutObjectTagging",
         "s3:GetObjectTagging",
         "s3:PutObject"
-    ]
+      ]
     resources = [
-        "arn:aws:s3:::${var.src_s3_bucket_name}",
+        "arn:aws:s3:::${var.src_s3_bucket_name}/*",
         "arn:aws:s3:::${var.dst_s3_bucket_name}/*"
-        ]
+      ]
+    }
+
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "datasync:DescribeTask",
+      "datasync:ListTasks"
+    ]
+    resources = ["*"]
     }
 
 }

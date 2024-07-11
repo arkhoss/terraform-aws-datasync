@@ -17,8 +17,32 @@ variable "is_src_account" {
   default     = true
 }
 
+variable "src_account_id" {
+  description = "Source Account ID"
+  type        = string
+  default     = null
+}
+
+variable "src_aws_region" {
+  description = "Source AWS Region"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "dst_aws_region" {
+  description = "Destination AWS Region"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "is_dst_account" {
+  description = "Work over Destination Accout"
+  type        = bool
+  default     = true
+}
+
 #----------------------------------------------------------------
-#  IAM role for DataSync in source account
+#  Source Role for DataSync
 #----------------------------------------------------------------
 variable "src_create_iam_role" {
   description = "Create IAM role for DataSync"
@@ -54,7 +78,7 @@ variable "src_iam_role_arn" {
 }
 
 #----------------------------------------------------------------
-#  Amazon S3 location in source account
+#  Source Amazon S3 location
 #----------------------------------------------------------------
 variable "src_create_s3_bucket" {
   description = "Create new S3 bucket for DataSync location. "
@@ -86,8 +110,8 @@ variable "src_s3_attached_policy" {
 #  Amazon DataSync destination location in your source account.
 #----------------------------------------------------------------
 
-variable "create_datasync_locations" {
-  description = "Enable the creation of datasync locations"
+variable "task_create" {
+  description = "Enable the creation of datasync task"
   type        = bool
   default     = false
 }
@@ -95,6 +119,42 @@ variable "create_datasync_locations" {
 #----------------------------------------------------------------
 #  Amazon S3 in destination account
 #----------------------------------------------------------------
+#----------------------------------------------------------------
+#  Source Role for DataSync
+#----------------------------------------------------------------
+variable "dst_create_iam_role" {
+  description = "Create IAM role for DataSync"
+  type        = bool
+  default     = false
+}
+
+variable "dst_iam_role_name" {
+  description = "IAM Role Name to be created"
+  type        = string
+  default     = null
+}
+
+variable "dst_iam_role_permissions_boundary" {
+  description = "IAM role Permission boundary - The policy for the Role"
+  type        = string
+  default     = null
+}
+
+variable "dst_force_detach_policies" {
+  description = "IAM role Force detach policies"
+  type        = bool
+  default     = false
+}
+
+variable "dst_iam_role_arn" {
+  description = <<-EOD
+  (Required) The Amazon Resource Name (ARN) of the role that the Amazon DataSync can assume
+  Mandatory if `dst_create_iam_role=false`
+  EOD
+  type        = string
+  default     = "arn:aws:iam::123456789012:role/destination-datasync-role"
+}
+
 variable "dst_create_s3_bucket" {
   description = "Create new S3 bucket for Destination. "
   type        = string
@@ -145,3 +205,33 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+
+#----------------------------------------------------------------
+#  Amazon DataSync Task in your source account.
+#----------------------------------------------------------------
+
+variable "create_datasync_task" {
+  description = "Enable the creation of datasync task"
+  type        = bool
+  default     = false
+}
+
+variable "task_name" {
+  description = "Name for the task"
+  type        = string
+  default     = "example_task"
+}
+  
+variable "task_src_location_s3" {
+  description = "Location DST"
+  type        = string
+  default     = "example_task"
+}
+
+variable "task_dst_location_s3" {
+  description = "Location DST"
+  type        = string
+  default     = "example_task"
+} 
+
