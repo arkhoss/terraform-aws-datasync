@@ -118,10 +118,10 @@ resource "aws_datasync_location_s3" "src_s3" {
   count             = var.task_create ? 1 : 0
   provider          = aws.source
   s3_bucket_arn     = try(length(var.src_s3_bucket_arn), 0) > 0 ? var.src_s3_bucket_arn : aws_s3_bucket.src_s3[0].arn 
-  subdirectory      = "/"
+  subdirectory      = try(length(var.src_s3_bucket_path), 0) > 0 ? var.src_s3_bucket_path : "/"
 
   s3_config {
-    bucket_access_role_arn = aws_iam_role.src_role[0].arn
+    bucket_access_role_arn = try(length(var.src_iam_role_arn), 0) > 0 ? var.src_iam_role_arn : aws_iam_role.src_role[0].arn
   }
 }
 
@@ -129,10 +129,10 @@ resource "aws_datasync_location_s3" "dst_s3" {
   count             = var.task_create ? 1 : 0
   provider          = aws.destination
   s3_bucket_arn     = try(length(var.dst_s3_bucket_arn), 0) > 0 ? var.dst_s3_bucket_arn : aws_s3_bucket.dst_s3[0].arn 
-  subdirectory      = "/"
+  subdirectory      = try(length(var.dst_s3_bucket_path), 0) > 0 ? var.dst_s3_bucket_path : "/"
 
   s3_config {
-    bucket_access_role_arn = aws_iam_role.src_role[0].arn
+    bucket_access_role_arn = try(length(var.src_iam_role_arn), 0) > 0 ? var.src_iam_role_arn : aws_iam_role.src_role[0].arn
   }
 }
 
@@ -155,6 +155,6 @@ resource "aws_datasync_task" "this" {
   }
 
   schedule {
-    schedule_expression = "cron(0 */8 * * ? *)" # every 8 hours
+    schedule_expression = var.task_schedule
   }
 }

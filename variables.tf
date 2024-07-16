@@ -100,6 +100,13 @@ variable "src_s3_bucket_arn" {
   default     = null
 }
 
+
+variable "src_s3_bucket_path" {
+  description = "Path in the source S3 bucket"
+  type        = string
+  default     = null
+}
+
 variable "src_s3_attached_policy" {
   description = "Amazon S3 attached policy"
   type        = string
@@ -233,5 +240,10 @@ variable "task_dst_location_s3" {
   description = "Location DST"
   type        = string
   default     = "example_task"
-} 
+}
 
+variable "task_schedule" {
+  description = "Schedule cronjob"
+  type        = string
+  default     = "cron(0 */8 * * ? *)"
+}
