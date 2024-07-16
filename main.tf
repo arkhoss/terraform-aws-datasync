@@ -148,14 +148,24 @@ resource "aws_datasync_task" "src_task" {
   source_location_arn      = aws_datasync_location_s3.src_s3[0].arn
   
   options {
-    bytes_per_second  = -1
-    posix_permissions = "NONE"
-    uid               = "NONE"
-    gid               = "NONE"
-    verify_mode       = "NONE"
+    atime                          = "BEST_EFFORT"
+    bytes_per_second               = -1
+    gid                            = "NONE"
+    log_level                      = "OFF"
+    mtime                          = "PRESERVE"
+    object_tags                    = "PRESERVE"
+    overwrite_mode                 = "ALWAYS"
+    posix_permissions              = "NONE"
+    preserve_deleted_files         = "PRESERVE"
+    preserve_devices               = "NONE"
+    task_queueing                  = var.task_enabled
+    transfer_mode                  = "CHANGED"
+    uid                            = "NONE"
+    verify_mode                    = "NONE"
   }
 
   schedule {
     schedule_expression = var.task_schedule
   }
 }
+

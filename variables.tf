@@ -247,3 +247,10 @@ variable "task_schedule" {
   type        = string
   default     = "cron(0 */8 * * ? *)"
 }
+
+
+variable "task_enabled" {
+  description = "Enable or Disable Task"
+  type        = string
+  default     = "ENABLED"
+}
