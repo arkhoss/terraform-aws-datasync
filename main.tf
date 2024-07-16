@@ -140,8 +140,9 @@ resource "aws_datasync_location_s3" "dst_s3" {
 # task
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "aws_datasync_task" "this" {
-  count                    = var.task_create ? 1 : 0
+resource "aws_datasync_task" "src_task" {
+  count                    = var.task_create && var.is_src_account ? 1 : 0
+  provider                 = aws.destination
   name                     = try(length(var.task_name), 0) > 0 ? var.task_name : "example-task"
   destination_location_arn = aws_datasync_location_s3.dst_s3[0].arn
   source_location_arn      = aws_datasync_location_s3.src_s3[0].arn
